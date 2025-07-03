@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>A Z Creations</title>
+  <style>
+    body { font-family: Arial; margin: 0; background: #eebaef; }
+    header { background: #f56be1; color: rgb(128, 0, 96); padding: 20px; text-align: center; }
+
+.az{
+        font-size: 50px;
+        text-align: left;
+    }
+
+    header h1{
+      color: #3c0147;
+      
+    }
+
+    .products {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      padding: 20px;
+    }
+
+    .product {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      text-align: center;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    .product img {
+      width: 100%;
+      height: 330px;
+      object-fit: cover;
+      border-radius: 8px;
+    }
+
+    .btn {
+      padding: 8px 15px;
+      background: #198754;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      margin: 5px;
+    }
+
+    .btn:hover { background: #157347; }
+    .product:hover{ background-color: rgb(255, 0, 212);}
+
+    .fixed-buttons1 {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .popup {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.5);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      opacity: 0;
+      visibility: hidden;
+      transform: scale(1.2);
+      transition: all 0.3s ease;
+    }
+
+    .popup.active {
+      opacity: 1;
+      visibility: visible;
+      transform: scale(1);
+    }
+
+    .popup-content {
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      width: 90%;
+      max-width: 500px;
+      max-height: 90%;
+      overflow-y: auto;
+      position: relative;
+    }
+
+    .popup-content h2 { margin-top: 0; }
+
+    .close-btn {
+      position: absolute;
+      top: 10px; right: 15px;
+      background: red;
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      cursor: pointer;
+      border-radius: 50%;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 10px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+
+    .cart-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 5px 0;
+      border-bottom: 1px solid #eee;
+    }
+
+    .cart-item span {
+      flex: 1;
+    }
+
+    .remove-btn {
+      background: #dc3545;
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 50%;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    ul { padding-left: 0; list-style: none; }
+    .product input {
+      width: 60px;
+      padding: 5px;
+      margin: 10px auto;
+      display: block;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+    <h1 class="az">A Z Creations </h1>
+  <h1 style="background-color: #eebaef;">Resin Products</h1>
+  <h2 style="background-color: #eebaef;">Bookmarks</h2>
+</header>
+
+<section class="products">
+  <div class="product">
+    <img src="Tea Light Candles.jpg" alt="Product">
+    <h3>Customised Tea Light Candles</h3>
+    <p>₹30</p>
+    QTY:<input type="number" id="qtyB" value="1" min="1" style="width: 25px;">
+    <br>Colours Name: <input type="text" id="customTextB" placeholder="e.g. Red, Pink" style="width: 130px;">
+    <button class="btn" onclick="addCustomWordToCart()">Add to Cart</button>
+    <button class="btn" onclick="orderCustomWordProduct()">Order</button>
+  </div>
+</section>
+
+<!-- Fixed Buttons -->
+<div class="fixed-buttons1">
+  <button class="btn" onclick="togglePopup('cartPopup')">Cart</button>
+</div>
+
+<!-- Cart Popup (with inline order form) -->
+<div id="cartPopup" class="popup">
+  <div class="popup-content">
+    <button class="close-btn" onclick="togglePopup('cartPopup')">×</button>
+    <h2>Shopping Cart</h2>
+    <ul id="cartItems"></ul>
+    <p><strong>Total: ₹<span id="cartTotal">0</span></strong></p>
+    <hr>
+    <input id="cName" type="text" placeholder="Your Name">
+    <input id="cAddress" type="text" placeholder="Your Address">
+    <input id="cPhone" type="text" placeholder="Your Phone Number">
+    <button class="btn" onclick="sendCartOrder()">Order via WhatsApp</button>
+  </div>
+</div>
+
+<!-- Single Product Order Popup -->
+<div id="singleOrderPopup" class="popup">
+  <div class="popup-content">
+    <button class="close-btn" onclick="togglePopup('singleOrderPopup')">×</button>
+    <h2>Order Product</h2>
+    <input id="sName" type="text" placeholder="Your Name">
+    <input id="sAddress" type="text" placeholder="Your Address">
+    <input id="sPhone" type="text" placeholder="Your Phone Number">
+    <button class="btn" onclick="sendSingleOrder()">Order via WhatsApp</button>
+  </div>
+</div>
+
+  <div id="singleOrderPopup" class="popup">
+    <div class="popup-content">
+      <button class="close-btn" onclick="togglePopup('singleOrderPopup')">×</button>
+      <h2>Order Product</h2>
+      <input id="sName" type="text" placeholder="Your Name">
+      <input id="sAddress" type="text" placeholder="Your Address">
+      <input id="sPhone" type="text" placeholder="Your Phone Number">
+      <button class="btn" onclick="sendSingleOrder()">Order via WhatsApp</button>
+    </div>
+  </div>
+
+<script>
+    function addCustomWordToCart() {
+  const qty = parseInt(document.getElementById("qtyB").value);
+  const customText = document.getElementById("customTextB").value.trim();
+
+  if (!customText) {
+    alert("Please enter the colour name.");
+    return;
+  }
+
+  const baseName = "Customised Tea Light Candles";
+  const fullName = `${baseName} - ${customText}`;
+  addToCart(fullName, 30, qty);
+}
+
+function orderCustomWordProduct() {
+  const qty = parseInt(document.getElementById("qtyB").value);
+  const customText = document.getElementById("customTextB").value.trim();
+
+  if (!customText) {
+    alert("Please enter the colour name.");
+    return;
+  }
+
+  const baseName = "Customised Tea Light Candles";
+  const fullName = `${baseName} - ${customText}`;
+  openSingleOrderForm(fullName, 30, qty);
+}
+
+    const cart = [];
+  let currentSingleProduct = {};
+
+  function addToCart(product, price, quantity) {
+    cart.push({ product, price, quantity });
+    updateCart();
+    alert(`${product} x${quantity} added to cart!`);
+  }
+  
+  function removeFromCart(index) {
+    cart.splice(index, 1);
+    updateCart();
+  }
+
+  function updateCart() {
+    const cartItems = document.getElementById('cartItems');
+    const cartTotal = document.getElementById('cartTotal');
+    cartItems.innerHTML = '';
+    let total = 0;
+    cart.forEach((item, index) => {
+      const li = document.createElement('li');
+      li.className = 'cart-item';
+      li.innerHTML = `
+        <span>${item.product} x${item.quantity} - ₹${item.price * item.quantity}</span>
+        <button class="remove-btn" onclick="removeFromCart(${index})">×</button>
+      `;
+      cartItems.appendChild(li);
+      total += item.price * item.quantity;
+    });
+    cartTotal.textContent = total;
+  }
+
+  function togglePopup(id) {
+    document.getElementById(id).classList.toggle('active');
+  }
+
+  function openSingleOrderForm(product, price, quantity) {
+    currentSingleProduct = { product, price, quantity };
+    togglePopup('singleOrderPopup');
+  }
+
+  function sendCartOrder() {
+    const name = document.getElementById("cName").value;
+    const address = document.getElementById("cAddress").value;
+    const phone = document.getElementById("cPhone").value;
+    if (!name || !address || !phone) return alert("Fill all details.");
+    if (cart.length === 0) return alert("Cart is empty!");
+
+    let msg = `*A Z Creations*%0A*Cart Order*%0AName: ${name}%0AAddress: ${address}%0APhone: ${phone}%0A%0A*Items:*%0A`;
+    let total = 0;
+    cart.forEach(item => {
+      msg += `- ${item.product} x${item.quantity} ₹${item.price * item.quantity}%0A`;
+      total += item.price * item.quantity;
+    });
+    msg += `%0ATotal: ₹${total}`;
+    window.open(`https://wa.me/917632896742?text=${msg}`, '_blank');
+    togglePopup('cartPopup');
+    cart.length = 0;
+  }
+
+  function sendSingleOrder() {
+    const name = document.getElementById("sName").value;
+    const address = document.getElementById("sAddress").value;
+    const phone = document.getElementById("sPhone").value;
+    if (!name || !address || !phone) return alert("Fill all details.");
+
+    const p = currentSingleProduct;
+    let msg = `*A Z Creations*%0A*Single Product Order*%0AName: ${name}%0AAddress: ${address}%0APhone: ${phone}%0A%0AProduct: ${p.product} x${p.quantity}%0APrice: ₹${p.price * p.quantity}`;
+    window.open(`https://wa.me/917632896742?text=${msg}`, '_blank');
+    togglePopup('singleOrderPopup');
+  }
+
+</script>
+
+</body>
+</html>
